@@ -14,7 +14,7 @@ function setupGit() {
     core.info("Starting git setup");
     exec.exec(`git config --local user.email "${context.context.actor}"`)
     exec.exec(`git config --local user.name "${context.context.actor}"`)
-    exec.exec(`git remote set-url origin https://${context.context.action}:${params.token}@github.com/${context.context.repo.owner}/${context.context.repo.repo}.git`)
+    // exec.exec(`git remote set-url origin https://${context.context.action}:${params.token}@github.com/${context.context.repo.owner}/${context.context.repo.repo}.git`)
     exec.exec(`git checkout -B ${params.branch}`)
     // TODO might need to setup a token
     core.info("Completed git setup");
@@ -22,7 +22,7 @@ function setupGit() {
 
 function prepareRelease() {
     core.info("Starting release preparation");
-    let command = `mvn release:prepare -B`;
+    let command = `mvn release:prepare -B -Dusername=${context.context.actor} -Dpassword=${params.token}`;
     command += params.releaseVersion ? ` -DreleaseVersion=${params.releaseVersion}` : '';
     command += params.developmentVersion ? ` -DdevelopmentVersion=${params.developmentVersion}` : '';
     command += params.tag ? ` -DreleaseVersion=${params.tag}` : '';
