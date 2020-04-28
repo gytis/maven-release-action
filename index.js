@@ -14,9 +14,9 @@ async function setupGit() {
     core.info("Starting git setup");
     await exec.exec(`git config --local user.email "gytis@redhat.com"`);
     await exec.exec(`git config --local user.name "${github.context.actor}"`);
+    await exec.exec(`git remote set-url origin https://${context.context.action}:${params.token}@github.com/${context.context.repo.owner}/${context.context.repo.repo}.git`);
     await exec.exec('git remote show origin');
-    await exec.exec(`git remote set-url origin https://${context.context.action}:${params.token}@github.com/${context.context.repo.owner}/${context.context.repo.repo}.git`)
-    await exec.exec(`git checkout -B ${params.branch}`);
+    await exec.exec(`git checkout ${params.branch}`);
     // TODO might need to setup a token
     core.info("Completed git setup");
 }
