@@ -15,7 +15,7 @@ async function setupGit() {
     await exec.exec(`git config --local user.email "gytis@redhat.com"`);
     await exec.exec(`git config --local user.name "${github.context.actor}"`);
     await exec.exec('git remote show origin');
-    // await exec.exec(`git remote set-url origin https://${context.context.action}:${params.token}@github.com/${context.context.repo.owner}/${context.context.repo.repo}.git`)
+    await exec.exec(`git remote set-url origin https://${context.context.action}:${params.token}@github.com/${context.context.repo.owner}/${context.context.repo.repo}.git`)
     await exec.exec(`git checkout -B ${params.branch}`);
     // TODO might need to setup a token
     core.info("Completed git setup");
@@ -23,7 +23,8 @@ async function setupGit() {
 
 async function prepareRelease() {
     core.info("Starting release preparation");
-    let command = `mvn release:prepare -B -Dusername=${github.context.actor} -Dpassword=${params.token} -DpushChanges=false`;
+    // let command = `mvn release:prepare -B -Dusername=${github.context.actor} -Dpassword=${params.token} -DpushChanges=false`;
+    let command = `mvn release:prepare -B -DpushChanges=false`;
     command += params.releaseVersion ? ` -DreleaseVersion=${params.releaseVersion}` : '';
     command += params.developmentVersion ? ` -DdevelopmentVersion=${params.developmentVersion}` : '';
     command += params.tag ? ` -DreleaseVersion=${params.tag}` : '';
@@ -33,7 +34,7 @@ async function prepareRelease() {
 
 async function performRelease() {
     core.info("Starting the release");
-    await exec.exec('mvn release:perform -B -Dusername=${github.context.actor} -Dpassword=${params.token} ');
+    await exec.exec('mvn release:perform -B');
     core.info("Released");
 }
 
