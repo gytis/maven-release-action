@@ -21,7 +21,7 @@ function setupGit() {
 
 function prepareRelease() {
     core.info("Starting release preparation");
-    const command = `mvn release:prepare -B`;
+    let command = `mvn release:prepare -B`;
     command += params.releaseVersion ? ` -DreleaseVersion=${params.releaseVersion}` : '';
     command += params.developmentVersion ? ` -DdevelopmentVersion=${params.developmentVersion}` : '';
     command += params.tag ? ` -DreleaseVersion=${params.tag}` : '';
