@@ -1,0 +1,22 @@
+name: "Maven release action"
+description: "Release a Java project with a maven-release-plugin"
+inputs:
+  token:
+    description: "GitHub token"
+    required: true
+  branch:
+    description: "Branch which should be released"
+    default: "master"
+    required: false
+  releaseVersion:
+    description: "Version to be released"
+    required: false
+  developmentVersion:
+    description: "New development version"
+    required: false
+  tag:
+    description: "Tag to be used"
+    required: false
+runs:
+  using: "node12"
+  main: "index.js"

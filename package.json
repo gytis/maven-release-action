@@ -1,0 +1,25 @@
+{
+  "name": "maven-release-action",
+  "version": "1.0.0",
+  "description": "Release a Java project with a maven-release-plugin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gytis/maven-release-action.git"
+  },
+  "keywords": [],
+  "author": "Gytis Trikleris",
+  "license": "Apache License 2.0",
+  "bugs": {
+    "url": "https://github.com/gytis/maven-release-action/issues"
+  },
+  "homepage": "https://github.com/gytis/maven-release-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.3",
+    "@actions/exec": "^1.0.3",
+    "@actions/github": "^2.1.1"
+  }
+}
