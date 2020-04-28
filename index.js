@@ -23,7 +23,7 @@ async function setupGit() {
 
 async function prepareRelease() {
     core.info("Starting release preparation");
-    let command = `mvn release:prepare -B -Dusername=${github.context.actor} -Dpassword=${params.token}`;
+    let command = `mvn release:prepare -B -DpushChanges=false`;
     command += params.releaseVersion ? ` -DreleaseVersion=${params.releaseVersion}` : '';
     command += params.developmentVersion ? ` -DdevelopmentVersion=${params.developmentVersion}` : '';
     command += params.tag ? ` -DreleaseVersion=${params.tag}` : '';
