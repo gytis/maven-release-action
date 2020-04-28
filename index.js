@@ -10,36 +10,36 @@ const params = {
     tag: core.getInput('tag')
 }
 
-function setupGit() {
+async function setupGit() {
     core.info("Starting git setup");
-    exec.exec(`git config --local user.email "gytis@redhat.com"`)
-    exec.exec(`git config --local user.name "${context.context.actor}"`)
+    await exec.exec(`git config --local user.email "gytis@redhat.com"`)
+    await exec.exec(`git config --local user.name "${context.context.actor}"`)
     // exec.exec(`git remote set-url origin https://${context.context.action}:${params.token}@github.com/${context.context.repo.owner}/${context.context.repo.repo}.git`)
-    exec.exec(`git checkout -B ${params.branch}`)
+    await exec.exec(`git checkout -B ${params.branch}`)
     // TODO might need to setup a token
     core.info("Completed git setup");
 }
 
-function prepareRelease() {
+async function prepareRelease() {
     core.info("Starting release preparation");
     let command = `mvn release:prepare -B -Dusername=${context.context.actor} -Dpassword=${params.token}`;
     command += params.releaseVersion ? ` -DreleaseVersion=${params.releaseVersion}` : '';
     command += params.developmentVersion ? ` -DdevelopmentVersion=${params.developmentVersion}` : '';
     command += params.tag ? ` -DreleaseVersion=${params.tag}` : '';
-    exec.exec(command);
+    await exec.exec(command);
     core.info("Release prepared");
 }
 
-function performRelease() {
+async function performRelease() {
     core.info("Starting the release");
-    exec.exec('mvn release:perform -B');
+    await exec.exec('mvn release:perform -B');
     core.info("Released");
 }
 
 try {
-    setupGit();
-    prepareRelease();
-    performRelease();
+    await setupGit();
+    await prepareRelease();
+    await performRelease();
 } catch (error) {
     core.setFailed(error.message);
 }
