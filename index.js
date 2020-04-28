@@ -14,11 +14,11 @@ async function setupGit() {
     core.info("Starting git setup");
     await exec.exec(`git config --local user.email "gytis@redhat.com"`);
     await exec.exec(`git config --local user.name "gytis"`);
-    core.info(context.context.actor);
+    core.info(github.context.actor);
     core.info(params.token);
-    core.info(context.context.repo.owner);
-    core.info(context.context.repo.repo);
-    await exec.exec(`git remote set-url origin https://gytis:${params.token}@github.com/gytis/release-action-test.git`);
+    core.info(github.context.repo.owner);
+    core.info(github.context.repo.repo);
+    await exec.exec(`git remote set-url origin https://${github.context.actor}:${params.token}@github.com/${github.context.repo.owner}/${github.context.repo.repo}.git`);
     await exec.exec(`git checkout ${params.branch}`);
     // TODO might need to setup a token
     core.info("Completed git setup");
