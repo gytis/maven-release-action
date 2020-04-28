@@ -36,10 +36,7 @@ async function performRelease() {
     core.info("Released");
 }
 
-try {
-    await setupGit();
-    await prepareRelease();
-    await performRelease();
-} catch (error) {
-    core.setFailed(error.message);
-}
+setupGit()
+    .then(() => prepareRelease())
+    .then(() => performRelease())
+    .catch(reason => core.setFailed(error.message));
