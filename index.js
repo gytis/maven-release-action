@@ -1,38 +1,38 @@
-import { getInput, info, setFailed } from '@actions/core';
-import { exec } from '@actions/exec';
-import { context } from '@actions/github';
+const context = require('@actions/github');
+const core = require('@actions/core');
+const exec = require('@actions/exec');
 
 const params = {
-    token: getInput('token'),
-    branch: getInput('branch'),
-    releaseVersion: getInput('releaseVersion'),
-    developmentVersion: getInput('developmentVersion'),
-    tag: getInput('tag')
+    token: core.getInput('token'),
+    branch: core.getInput('branch'),
+    releaseVersion: core.getInput('releaseVersion'),
+    developmentVersion: core.getInput('developmentVersion'),
+    tag: core.getInput('tag')
 }
 
 function setupGit() {
-    info("Starting git setup");
-    exec(`git config --local user.email "${context.actor}"`)
-    exec(`git config --local user.name "${context.actor}"`)
-    exec(`git checkout -B ${params.branch}`)
+    core.info("Starting git setup");
+    exec.exec(`git config --local user.email "${context.context.actor}"`)
+    exec.exec(`git config --local user.name "${context.context.actor}"`)
+    exec.exec(`git checkout -B ${params.branch}`)
     // TODO might need to setup a token
-    info("Completed git setup");
+    core.info("Completed git setup");
 }
 
 function prepareRelease() {
-    info("Starting release preparation");
+    core.info("Starting release preparation");
     const command = `mvn release:prepare -B`;
     command += params.releaseVersion ? ` -DreleaseVersion=${params.releaseVersion}` : '';
     command += params.developmentVersion ? ` -DdevelopmentVersion=${params.developmentVersion}` : '';
     command += params.tag ? ` -DreleaseVersion=${params.tag}` : '';
-    exec(command);
-    info("Release prepared");
+    exec.exec(command);
+    core.info("Release prepared");
 }
 
 function performRelease() {
-    info("Starting the release");
-    exec('mvn release:perform -B');
-    info("Released");
+    core.info("Starting the release");
+    exec.exec('mvn release:perform -B');
+    code.info("Released");
 }
 
 try {
@@ -40,5 +40,5 @@ try {
     prepareRelease();
     performRelease();
 } catch (error) {
-    setFailed(error.message);
+    core.setFailed(error.message);
 }
