@@ -8454,59 +8454,64 @@ const github_1 = __webpack_require__(469);
 const MVN_PREPARE_COMMAND = 'mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:prepare -B -DpushChanges=false';
 const GIT_PUSH_ALL_COMMAND = 'git push --all';
 const GIT_PUSH_TAGS_COMMAND = 'git push --tags';
-class Parameters {
+class Action {
     constructor() {
+        this.user = github_1.context.actor;
         this.email = core_1.getInput('email', { required: true });
         this.releaseVersion = core_1.getInput('releaseVersion');
         this.developmentVersion = core_1.getInput('developmentVersion');
         this.profiles = core_1.getInput('profiles');
     }
-}
-function prepare(parameters) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let commandParams = [];
-        if (parameters.releaseVersion.length > 0) {
-            commandParams.push(`-DreleaseVersion=${parameters.releaseVersion}`);
-        }
-        if (parameters.developmentVersion.length > 0) {
-            commandParams.push(`-DdevelopmentVersion=${parameters.developmentVersion}`);
-        }
-        if (parameters.profiles.length > 0) {
-            commandParams.push(`-P${parameters.profiles}`);
-        }
-        yield exec_1.exec(MVN_PREPARE_COMMAND, commandParams);
-    });
-}
-function push(parameters) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield exec_1.exec(`git config --local user.name "${github_1.context.actor}"`);
-        yield exec_1.exec(`git config --local user.email "${parameters.email}"`);
-        yield exec_1.exec(GIT_PUSH_ALL_COMMAND);
-        yield exec_1.exec(GIT_PUSH_TAGS_COMMAND);
-    });
-}
-function handleFailure(e) {
-    console.error(e);
-    if (e instanceof Error) {
-        core_1.setFailed(e.message);
+    execute() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield this.init();
+                yield this.prepare();
+                yield this.push();
+            }
+            catch (e) {
+                this.handleFailure(e);
+            }
+        });
     }
-    else {
-        core_1.setFailed('Failed to release project');
+    init() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield exec_1.exec(`git config --local user.name "${this.user}"`);
+            yield exec_1.exec(`git config --local user.email "${this.email}"`);
+        });
+    }
+    prepare() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let params = [];
+            if (this.releaseVersion.length > 0) {
+                params.push(`-DreleaseVersion=${this.releaseVersion}`);
+            }
+            if (this.developmentVersion.length > 0) {
+                params.push(`-DdevelopmentVersion=${this.developmentVersion}`);
+            }
+            if (this.profiles.length > 0) {
+                params.push(`-P${this.profiles}`);
+            }
+            yield exec_1.exec(MVN_PREPARE_COMMAND, params);
+        });
+    }
+    push() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield exec_1.exec(GIT_PUSH_ALL_COMMAND);
+            yield exec_1.exec(GIT_PUSH_TAGS_COMMAND);
+        });
+    }
+    handleFailure(e) {
+        console.error(e);
+        if (e instanceof Error) {
+            core_1.setFailed(e.message);
+        }
+        else {
+            core_1.setFailed('Failed to release project');
+        }
     }
 }
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const parameters = new Parameters();
-            yield prepare(parameters);
-            yield push(parameters);
-        }
-        catch (e) {
-            handleFailure(e);
-        }
-    });
-}
-main();
+new Action().execute();
 
 
 /***/ }),
