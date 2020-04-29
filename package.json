@@ -2,9 +2,10 @@
   "name": "maven-release-action",
   "version": "1.0.0",
   "description": "Release a Java project with a maven-release-plugin",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "./node_modules/typescript/bin/tsc",
+    "build": "./node_modules/.bin/tsc",
+    "package": "./node_modules/.bin/ncc build ./built -o ./dist",
     "clean": "rm -r ./built",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,7 +23,8 @@
   "dependencies": {
     "@actions/core": "^1.2.3",
     "@actions/exec": "^1.0.3",
-    "@actions/github": "^2.1.1"
+    "@actions/github": "^2.1.1",
+    "@zeit/ncc": "^0.22.1"
   },
   "devDependencies": {
     "typescript": "^3.8.3"
