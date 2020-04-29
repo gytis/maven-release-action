@@ -8494,12 +8494,23 @@ function push(remote, branch) {
 }
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const params = yield initAndGetParams();
-        yield setVersion(params.releaseVersion);
-        yield tag(params.tag);
-        yield setVersion(params.developmentVersion);
-        yield push(params.remote, params.branch);
-        yield push(params.remote, params.tag);
+        try {
+            const params = yield initAndGetParams();
+            yield setVersion(params.releaseVersion);
+            yield tag(params.tag);
+            yield setVersion(params.developmentVersion);
+            yield push(params.remote, params.branch);
+            yield push(params.remote, params.tag);
+        }
+        catch (e) {
+            console.error(e);
+            if (e instanceof Error) {
+                core_1.setFailed(e.message);
+            }
+            else {
+                core_1.setFailed('Failed to release project');
+            }
+        }
     });
 }
 main();
