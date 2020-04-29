@@ -36,31 +36,30 @@ async function getProjectVersion(): Promise<string> {
 }
 
 async function getReleaseVersion(): Promise<string> {
-    if (getInput('releaseVersion') === null) {
-        return (await getProjectVersion()).replace('-SNAPSHOT', '')
+    if (getInput('releaseVersion').length > 0) {
+        return getInput('releaseVersion')
     }
-
-    return getInput('releaseVersion')
+    return (await getProjectVersion()).replace('-SNAPSHOT', '')
 }
 
 async function getDevelopmentVersion(releaseVersion: string): Promise<string> {
-    if (getInput('developmentVersion') === null) {
-        let parts = releaseVersion.split('.')
-        let lastNumber: number = parseInt(parts[parts.length - 1])
-        if (isNaN(lastNumber)) {
-            throw new Error(`Unsupported format of ${releaseVersion}`)
-        }
-        parts[parts.length - 1] = (++lastNumber).toString()
-        return parts.join('.') + "-SNAPSHOT"
+    if (getInput('developmentVersion').length > 0) {
+        return getInput('developmentVersion')
     }
-    return getInput('developmentVersion')
+    let parts = releaseVersion.split('.')
+    let lastNumber: number = parseInt(parts[parts.length - 1])
+    if (isNaN(lastNumber)) {
+        throw new Error(`Unsupported format of ${releaseVersion}`)
+    }
+    parts[parts.length - 1] = (++lastNumber).toString()
+    return parts.join('.') + "-SNAPSHOT"
 }
 
 async function getTag(releaseVersion: string): Promise<string> {
-    if (getInput('tag') === null) {
-        return releaseVersion
+    if (getInput('tag').length > 0) {
+        return getInput('tag')
     }
-    return getInput('tag')
+    return releaseVersion
 }
 
 async function initAndGetParams(): Promise<ActionParams> {
@@ -73,8 +72,8 @@ async function initAndGetParams(): Promise<ActionParams> {
     const developmentVersion: string = await getDevelopmentVersion(releaseVersion)
     const tag: string = await getTag(releaseVersion)
 
-    await exec(`git config --local user.email "${ACTION_NAME}"`)
-    await exec(`git config --local user.name "${ACTION_NAME}@redhat.com"`)
+    await exec(`git config --local user.name "${ACTION_NAME}"`)
+    await exec(`git config --local user.email "${ACTION_NAME}@redhat.com"`)
 
     return {
         remote: remote,

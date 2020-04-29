@@ -8477,32 +8477,32 @@ function getProjectVersion() {
 }
 function getReleaseVersion() {
     return __awaiter(this, void 0, void 0, function* () {
-        if (core_1.getInput('releaseVersion') === null) {
-            return (yield getProjectVersion()).replace('-SNAPSHOT', '');
+        if (core_1.getInput('releaseVersion').length > 0) {
+            return core_1.getInput('releaseVersion');
         }
-        return core_1.getInput('releaseVersion');
+        return (yield getProjectVersion()).replace('-SNAPSHOT', '');
     });
 }
 function getDevelopmentVersion(releaseVersion) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (core_1.getInput('developmentVersion') === null) {
-            let parts = releaseVersion.split('.');
-            let lastNumber = parseInt(parts[parts.length - 1]);
-            if (isNaN(lastNumber)) {
-                throw new Error(`Unsupported format of ${releaseVersion}`);
-            }
-            parts[parts.length - 1] = (++lastNumber).toString();
-            return parts.join('.') + "-SNAPSHOT";
+        if (core_1.getInput('developmentVersion').length > 0) {
+            return core_1.getInput('developmentVersion');
         }
-        return core_1.getInput('developmentVersion');
+        let parts = releaseVersion.split('.');
+        let lastNumber = parseInt(parts[parts.length - 1]);
+        if (isNaN(lastNumber)) {
+            throw new Error(`Unsupported format of ${releaseVersion}`);
+        }
+        parts[parts.length - 1] = (++lastNumber).toString();
+        return parts.join('.') + "-SNAPSHOT";
     });
 }
 function getTag(releaseVersion) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (core_1.getInput('tag') === null) {
-            return releaseVersion;
+        if (core_1.getInput('tag').length > 0) {
+            return core_1.getInput('tag');
         }
-        return core_1.getInput('tag');
+        return releaseVersion;
     });
 }
 function initAndGetParams() {
@@ -8514,8 +8514,8 @@ function initAndGetParams() {
         const releaseVersion = yield getReleaseVersion();
         const developmentVersion = yield getDevelopmentVersion(releaseVersion);
         const tag = yield getTag(releaseVersion);
-        yield exec_1.exec(`git config --local user.email "${ACTION_NAME}"`);
-        yield exec_1.exec(`git config --local user.name "${ACTION_NAME}@redhat.com"`);
+        yield exec_1.exec(`git config --local user.name "${ACTION_NAME}"`);
+        yield exec_1.exec(`git config --local user.email "${ACTION_NAME}@redhat.com"`);
         return {
             remote: remote,
             branch: branch,

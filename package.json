@@ -4,6 +4,7 @@
   "description": "Release a Java project with a maven-release-plugin",
   "main": "dist/index.js",
   "scripts": {
+    "all": "npm install && npm run build && npm run package",
     "build": "./node_modules/.bin/tsc",
     "package": "./node_modules/.bin/ncc build ./built -o ./dist",
     "clean": "rm -r ./built ./dist",
