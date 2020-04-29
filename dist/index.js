@@ -8466,8 +8466,8 @@ class Action {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield this.init();
-                yield this.prepare();
-                yield this.push();
+                // await this.prepare()
+                // await this.push()
             }
             catch (e) {
                 this.handleFailure(e);
