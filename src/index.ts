@@ -1,6 +1,6 @@
-import { info, getInput } from '@actions/core'
-import { context } from '@actions/github'
+import { getInput, info } from '@actions/core'
 import { exec } from '@actions/exec'
+import { context } from '@actions/github'
 
 const ACTION_NAME = 'maven-release-action'
 const MVN_SET_VERSION_COMMAND = 'mvn org.codehaus.mojo:versions-maven-plugin:2.7:set'
@@ -21,12 +21,13 @@ async function initAndGetParams(): Promise<ActionParams> {
     info('Initialising')
     await exec(`git config --local user.email "${ACTION_NAME}"`)
     await exec(`git config --local user.name "${ACTION_NAME}@redhat.com"`)
+
     return {
-        remote: `https://${context.actor}:${getInput('token')}@github.com/${context.repo.owner}/${context.repo.repo}.git`,
-        branch: getInput('branch'),
-        releaseVersion: getInput('releaseVersion'),
-        developmentVersion: getInput('developmentVersion'),
-        tag: getInput('tag')
+        remote: `https://${context.actor}:${getInput('token', { required: true })}@github.com/${context.repo.owner}/${context.repo.repo}.git`,
+        branch: getInput('branch', { required: true }),
+        releaseVersion: getInput('releaseVersion', { required: true }),
+        developmentVersion: getInput('developmentVersion', { required: true }),
+        tag: getInput('tag', { required: true })
 
     } as ActionParams
 }
