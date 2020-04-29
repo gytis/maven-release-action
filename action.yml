@@ -4,6 +4,9 @@ inputs:
   token:
     description: "GitHub token"
     required: true
+  email:
+    description: "Email of the initiating user"
+    required: true
   profiles:
     description: "Maven profiles that should be activated e.g. release"
     required: false
