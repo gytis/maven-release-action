@@ -1,122 +1,54 @@
-import { getInput, info, setFailed } from '@actions/core'
+import { getInput, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
-import { ExecOptions } from '@actions/exec/lib/interfaces'
-import { context } from '@actions/github'
 
-const ACTION_NAME = 'maven-release-action'
-const MVN_GET_VERSION_COMMAND = 'mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout'
-const MVN_SET_VERSION_COMMAND = 'mvn org.codehaus.mojo:versions-maven-plugin:2.7:set'
-const MVN_COMMIT_VERSION_COMMAND = 'mvn org.codehaus.mojo:versions-maven-plugin:2.7:commit'
-const GIT_COMMIT_COMMAND = 'git commit'
-const GIT_TAG_COMMAND = 'git tag'
-const GIT_PUSH_COMMAND = 'git push'
+const MVN_PREPARE_COMMAND = 'mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:prepare -B -DpushChanges=false'
+const GIT_PUSH_ALL_COMMAND = 'git push --all'
+const GIT_PUSH_TAGS_COMMAND = 'git push --tags'
 
-interface ActionParams {
-    remote: string,
-    branch: string,
-    releaseVersion: string,
-    developmentVersion: string,
-    tag: string
+interface Parameters {
+    release: string,
+    development: string,
+    profiles: string
 }
 
-async function getProjectVersion(): Promise<string> {
-    let output = ''
-    let errors = ''
-    const options: ExecOptions = {
-        listeners: {
-            stdout: (data: Buffer) => output += data.toString(),
-            stderr: (data: Buffer) => errors += data.toString()
-        }
+async function prepare(parameters: Parameters): Promise<void> {
+    let commandParams = [];
+    if (parameters.release.length > 0) {
+        commandParams.push(`-DreleaseVersion=${parameters.release}`)
     }
-    await exec(MVN_GET_VERSION_COMMAND, undefined, options)
-    if (errors.length > 0) {
-        throw new Error(errors)
+    if (parameters.development.length > 0) {
+        commandParams.push(`-DdevelopmentVersion=${parameters.development}`)
     }
-    return output
-}
-
-async function getReleaseVersion(): Promise<string> {
-    if (getInput('releaseVersion').length > 0) {
-        return getInput('releaseVersion')
+    if (parameters.profiles.length > 0) {
+        commandParams.push(`-P${parameters.profiles}`)
     }
-    return (await getProjectVersion()).replace('-SNAPSHOT', '')
+    await exec(MVN_PREPARE_COMMAND, commandParams)
 }
 
-async function getDevelopmentVersion(releaseVersion: string): Promise<string> {
-    if (getInput('developmentVersion').length > 0) {
-        return getInput('developmentVersion')
+async function push(): Promise<void> {
+    await exec(GIT_PUSH_ALL_COMMAND)
+    await exec(GIT_PUSH_TAGS_COMMAND)
+}
+
+function handleFailure(e: any) {
+    console.error(e)
+    if (e instanceof Error) {
+        setFailed(e.message)
+    } else {
+        setFailed('Failed to release project')
     }
-    let parts = releaseVersion.split('.')
-    let lastNumber: number = parseInt(parts[parts.length - 1])
-    if (isNaN(lastNumber)) {
-        throw new Error(`Unsupported format of ${releaseVersion}`)
-    }
-    parts[parts.length - 1] = (++lastNumber).toString()
-    return parts.join('.') + "-SNAPSHOT"
-}
-
-async function getTag(releaseVersion: string): Promise<string> {
-    if (getInput('tag').length > 0) {
-        return getInput('tag')
-    }
-    return releaseVersion
-}
-
-async function initAndGetParams(): Promise<ActionParams> {
-    info('Initialising')
-
-    const token = getInput('token', { required: true })
-    const remote = `https://${context.actor}:${token}@github.com/${context.repo.owner}/${context.repo.repo}.git`
-    const branch = getInput('branch', { required: true })
-    const releaseVersion: string = await getReleaseVersion()
-    const developmentVersion: string = await getDevelopmentVersion(releaseVersion)
-    const tag: string = await getTag(releaseVersion)
-
-    await exec(`git config --local user.name "${ACTION_NAME}"`)
-    await exec(`git config --local user.email "${ACTION_NAME}@redhat.com"`)
-
-    return {
-        remote: remote,
-        branch: branch,
-        releaseVersion: releaseVersion,
-        developmentVersion: developmentVersion,
-        tag: tag
-    } as ActionParams
-}
-
-async function setVersion(version: string): Promise<void> {
-    info(`Setting a version to ${version}`)
-    await exec(MVN_SET_VERSION_COMMAND, [`-DnewVersion=${version}`])
-    await exec(MVN_COMMIT_VERSION_COMMAND)
-    info('Committing the version change')
-    await exec(GIT_COMMIT_COMMAND, ['.', '-m', `[${ACTION_NAME}] Set project version to ${version}`])
-}
-
-async function tag(tag: string): Promise<void> {
-    info(`Creating a tag ${tag}`)
-    await exec(GIT_TAG_COMMAND, [tag])
-}
-
-async function push(remote: string, branch: string): Promise<void> {
-    info(`Pushing ${branch} to ${remote}`)
-    await exec(GIT_PUSH_COMMAND, [remote, branch])
 }
 
 async function main(): Promise<void> {
     try {
-        const params = await initAndGetParams()
-        await setVersion(params.releaseVersion)
-        await tag(params.tag)
-        await setVersion(params.developmentVersion)
-        await push(params.remote, params.branch)
-        await push(params.remote, params.tag)
+        await prepare({
+            release: getInput('releaseVersion'),
+            development: getInput('developmentVersion'),
+            profiles: getInput('profiles')
+        })
+        await push()
     } catch (e) {
-        console.error(e)
-        if (e instanceof Error) {
-            setFailed(e.message)
-        } else {
-            setFailed('Failed to release project')
-        }
+        handleFailure(e)
     }
 }
 

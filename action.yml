@@ -4,12 +4,17 @@ inputs:
   token:
     description: "GitHub token"
     required: true
+  profiles:
+    description: "Maven profiles that should be activated e.g. release"
+    required: false
   releaseVersion:
     description: "Version to be released"
     required: false
+  # TODO remove
   developmentVersion:
     description: "New development version"
     required: false
+   # TODO remove
   tag:
     description: "Tag to be used"
     required: false
