@@ -4,19 +4,19 @@ inputs:
   token:
     description: "GitHub token"
     required: true
+  releaseVersion:
+    description: "Version to be released"
+    required: true
+  developmentVersion:
+    description: "New development version"
+    required: true
+  tag:
+    description: "Tag to be used"
+    required: true
   branch:
     description: "Branch which should be released"
     default: "master"
     required: false
-  releaseVersion:
-    description: "Version to be released"
-    required: false
-  developmentVersion:
-    description: "New development version"
-    required: false
-  tag:
-    description: "Tag to be used"
-    required: false
 runs:
   using: "node12"
-  main: "index.js"
+  main: "built/index.js"
