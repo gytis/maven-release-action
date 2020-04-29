@@ -1,4 +1,4 @@
-import { getInput, info } from '@actions/core'
+import { getInput, info, setFailed } from '@actions/core'
 import { exec } from '@actions/exec'
 import { context } from '@actions/github'
 
@@ -51,12 +51,21 @@ async function push(remote: string, branch: string): Promise<void> {
 }
 
 async function main(): Promise<void> {
-    const params = await initAndGetParams()
-    await setVersion(params.releaseVersion)
-    await tag(params.tag)
-    await setVersion(params.developmentVersion)
-    await push(params.remote, params.branch)
-    await push(params.remote, params.tag)
+    try {
+        const params = await initAndGetParams()
+        await setVersion(params.releaseVersion)
+        await tag(params.tag)
+        await setVersion(params.developmentVersion)
+        await push(params.remote, params.branch)
+        await push(params.remote, params.tag)
+    } catch (e) {
+        console.error(e)
+        if (e instanceof Error) {
+            setFailed(e.message)
+        } else {
+            setFailed('Failed to release project')
+        }
+    }
 }
 
 main()
