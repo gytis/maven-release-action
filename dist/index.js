@@ -8476,6 +8476,7 @@ class Action {
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {
+            core_1.info('setting user name and email in a local git configuration');
             yield exec_1.exec(`git config --local user.name "${this.user}"`);
             yield exec_1.exec(`git config --local user.email "${this.email}"`);
         });
@@ -8492,11 +8493,13 @@ class Action {
             if (this.profiles.length > 0) {
                 params.push(`-P${this.profiles}`);
             }
+            core_1.info('tagging the project');
             yield exec_1.exec(MVN_PREPARE_COMMAND, params);
         });
     }
     push() {
         return __awaiter(this, void 0, void 0, function* () {
+            core_1.info('pushing the changes');
             yield exec_1.exec(GIT_PUSH_ALL_COMMAND);
             yield exec_1.exec(GIT_PUSH_TAGS_COMMAND);
         });
