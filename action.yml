@@ -6,13 +6,13 @@ inputs:
     required: true
   releaseVersion:
     description: "Version to be released"
-    required: true
+    required: false
   developmentVersion:
     description: "New development version"
-    required: true
+    required: false
   tag:
     description: "Tag to be used"
-    required: true
+    required: false
   branch:
     description: "Branch which should be released"
     default: "master"

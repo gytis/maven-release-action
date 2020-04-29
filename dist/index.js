@@ -8452,22 +8452,76 @@ const core_1 = __webpack_require__(470);
 const exec_1 = __webpack_require__(986);
 const github_1 = __webpack_require__(469);
 const ACTION_NAME = 'maven-release-action';
+const MVN_GET_VERSION_COMMAND = 'mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout';
 const MVN_SET_VERSION_COMMAND = 'mvn org.codehaus.mojo:versions-maven-plugin:2.7:set';
 const MVN_COMMIT_VERSION_COMMAND = 'mvn org.codehaus.mojo:versions-maven-plugin:2.7:commit';
 const GIT_COMMIT_COMMAND = 'git commit';
 const GIT_TAG_COMMAND = 'git tag';
 const GIT_PUSH_COMMAND = 'git push';
+function getProjectVersion() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let output = '';
+        let errors = '';
+        const options = {
+            listeners: {
+                stdout: (data) => output += data.toString(),
+                stderr: (data) => errors += data.toString()
+            }
+        };
+        yield exec_1.exec(MVN_GET_VERSION_COMMAND, undefined, options);
+        if (errors.length > 0) {
+            throw new Error(errors);
+        }
+        return output;
+    });
+}
+function getReleaseVersion() {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (core_1.getInput('releaseVersion') === null) {
+            return (yield getProjectVersion()).replace('-SNAPSHOT', '');
+        }
+        return core_1.getInput('releaseVersion');
+    });
+}
+function getDevelopmentVersion(releaseVersion) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (core_1.getInput('developmentVersion') === null) {
+            let parts = releaseVersion.split('.');
+            let lastNumber = parseInt(parts[parts.length - 1]);
+            if (isNaN(lastNumber)) {
+                throw new Error(`Unsupported format of ${releaseVersion}`);
+            }
+            parts[parts.length - 1] = (++lastNumber).toString();
+            return parts.join('.');
+        }
+        return core_1.getInput('developmentVersion');
+    });
+}
+function getTag(releaseVersion) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (core_1.getInput('tag') === null) {
+            return releaseVersion;
+        }
+        return core_1.getInput('tag');
+    });
+}
 function initAndGetParams() {
     return __awaiter(this, void 0, void 0, function* () {
         core_1.info('Initialising');
+        const token = core_1.getInput('token', { required: true });
+        const remote = `https://${github_1.context.actor}:${token}@github.com/${github_1.context.repo.owner}/${github_1.context.repo.repo}.git`;
+        const branch = core_1.getInput('branch', { required: true });
+        const releaseVersion = yield getReleaseVersion();
+        const developmentVersion = yield getDevelopmentVersion(releaseVersion);
+        const tag = yield getTag(releaseVersion);
         yield exec_1.exec(`git config --local user.email "${ACTION_NAME}"`);
         yield exec_1.exec(`git config --local user.name "${ACTION_NAME}@redhat.com"`);
         return {
-            remote: `https://${github_1.context.actor}:${core_1.getInput('token', { required: true })}@github.com/${github_1.context.repo.owner}/${github_1.context.repo.repo}.git`,
-            branch: core_1.getInput('branch', { required: true }),
-            releaseVersion: core_1.getInput('releaseVersion', { required: true }),
-            developmentVersion: core_1.getInput('developmentVersion', { required: true }),
-            tag: core_1.getInput('tag', { required: true })
+            remote: remote,
+            branch: branch,
+            releaseVersion: releaseVersion,
+            developmentVersion: developmentVersion,
+            tag: tag
         };
     });
 }
@@ -8477,7 +8531,7 @@ function setVersion(version) {
         yield exec_1.exec(MVN_SET_VERSION_COMMAND, [`-DnewVersion=${version}`]);
         yield exec_1.exec(MVN_COMMIT_VERSION_COMMAND);
         core_1.info('Committing the version change');
-        yield exec_1.exec(GIT_COMMIT_COMMAND, ['.', `-m '[${ACTION_NAME}] Set project version to ${version}'`]);
+        yield exec_1.exec(GIT_COMMIT_COMMAND, ['.', '-m', `[${ACTION_NAME}] Set project version to ${version}`]);
     });
 }
 function tag(tag) {
