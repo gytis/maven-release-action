@@ -51,7 +51,7 @@ async function getDevelopmentVersion(releaseVersion: string): Promise<string> {
             throw new Error(`Unsupported format of ${releaseVersion}`)
         }
         parts[parts.length - 1] = (++lastNumber).toString()
-        return parts.join('.')
+        return parts.join('.') + "-SNAPSHOT"
     }
     return getInput('developmentVersion')
 }

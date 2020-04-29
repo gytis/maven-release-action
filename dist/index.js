@@ -8492,7 +8492,7 @@ function getDevelopmentVersion(releaseVersion) {
                 throw new Error(`Unsupported format of ${releaseVersion}`);
             }
             parts[parts.length - 1] = (++lastNumber).toString();
-            return parts.join('.');
+            return parts.join('.') + "-SNAPSHOT";
         }
         return core_1.getInput('developmentVersion');
     });
