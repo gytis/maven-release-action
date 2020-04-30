@@ -3,7 +3,7 @@ import { exec } from '@actions/exec'
 import { context } from '@actions/github'
 
 const MVN_RELEASE_PREPARE_COMMAND = 'mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:prepare -B -DpushChanges=false'
-const MVN_RELEASE_PERFORM_COMMAND = 'mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:perform -B'
+const MVN_RELEASE_PERFORM_COMMAND = 'mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:perform -B -DlocalCheckout=true'
 const MVN_RELEASE_CLEAN_COMMAND = 'mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:clean -B'
 const GIT_PUSH_ALL_COMMAND = 'git push --all'
 const GIT_PUSH_TAGS_COMMAND = 'git push --tags'

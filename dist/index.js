@@ -8452,7 +8452,7 @@ const core_1 = __webpack_require__(470);
 const exec_1 = __webpack_require__(986);
 const github_1 = __webpack_require__(469);
 const MVN_RELEASE_PREPARE_COMMAND = 'mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:prepare -B -DpushChanges=false';
-const MVN_RELEASE_PERFORM_COMMAND = 'mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:perform -B';
+const MVN_RELEASE_PERFORM_COMMAND = 'mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:perform -B -DlocalCheckout=true';
 const MVN_RELEASE_CLEAN_COMMAND = 'mvn org.apache.maven.plugins:maven-release-plugin:2.5.3:clean -B';
 const GIT_PUSH_ALL_COMMAND = 'git push --all';
 const GIT_PUSH_TAGS_COMMAND = 'git push --tags';
