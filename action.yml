@@ -16,6 +16,10 @@ inputs:
   tag:
     description: "Tag name to be used"
     required: false
+  doNotDeploy:
+    description: "Skip deploy step"
+    required: false
+    default: "false"
 runs:
   using: "node12"
   main: "dist/index.js"
