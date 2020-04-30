@@ -19,13 +19,13 @@ const PROPERTIES = {
 }
 
 async function init(): Promise<void> {
-    info('setting user name and email in a local git configuration')
+    info('Setting user name and email in a local git configuration')
     await exec(`git config --local user.name "${PROPERTIES.user}"`)
     await exec(`git config --local user.email "${PROPERTIES.email}"`)
 }
 
 async function prepare(): Promise<void> {
-    let params = [];
+    let params = []
     if (PROPERTIES.releaseVersion.length > 0) {
         params.push(`-DreleaseVersion=${PROPERTIES.releaseVersion}`)
     }
@@ -38,7 +38,7 @@ async function prepare(): Promise<void> {
     if (PROPERTIES.profiles.length > 0) {
         params.push(`-P${PROPERTIES.profiles}`)
     }
-    info('tagging the project')
+    info('Tagging the project')
     await exec(MVN_RELEASE_PREPARE_COMMAND, params)
 }
 
@@ -46,21 +46,21 @@ async function perform(): Promise<void> {
     if (PROPERTIES.doNotDeploy) {
         return
     }
-    let params = [];
+    let params = []
     if (PROPERTIES.profiles.length > 0) {
         params.push(`-P${PROPERTIES.profiles}`)
     }
-    info('deploying the project')
+    info('Deploying the project')
     await exec(MVN_RELEASE_PERFORM_COMMAND, params)
 }
 
 async function cleanup(): Promise<void> {
-    info('cleaning up')
+    info('Cleaning up')
     await exec(MVN_RELEASE_CLEAN_COMMAND)
 }
 
 async function push(): Promise<void> {
-    info('pushing the changes')
+    info('Pushing the changes')
     await exec(GIT_PUSH_ALL_COMMAND)
     await exec(GIT_PUSH_TAGS_COMMAND)
 }

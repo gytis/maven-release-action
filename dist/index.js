@@ -8467,7 +8467,7 @@ const PROPERTIES = {
 };
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
-        core_1.info('setting user name and email in a local git configuration');
+        core_1.info('Setting user name and email in a local git configuration');
         yield exec_1.exec(`git config --local user.name "${PROPERTIES.user}"`);
         yield exec_1.exec(`git config --local user.email "${PROPERTIES.email}"`);
     });
@@ -8487,7 +8487,7 @@ function prepare() {
         if (PROPERTIES.profiles.length > 0) {
             params.push(`-P${PROPERTIES.profiles}`);
         }
-        core_1.info('tagging the project');
+        core_1.info('Tagging the project');
         yield exec_1.exec(MVN_RELEASE_PREPARE_COMMAND, params);
     });
 }
@@ -8500,19 +8500,19 @@ function perform() {
         if (PROPERTIES.profiles.length > 0) {
             params.push(`-P${PROPERTIES.profiles}`);
         }
-        core_1.info('deploying the project');
+        core_1.info('Deploying the project');
         yield exec_1.exec(MVN_RELEASE_PERFORM_COMMAND, params);
     });
 }
 function cleanup() {
     return __awaiter(this, void 0, void 0, function* () {
-        core_1.info('cleaning up');
+        core_1.info('Cleaning up');
         yield exec_1.exec(MVN_RELEASE_CLEAN_COMMAND);
     });
 }
 function push() {
     return __awaiter(this, void 0, void 0, function* () {
-        core_1.info('pushing the changes');
+        core_1.info('Pushing the changes');
         yield exec_1.exec(GIT_PUSH_ALL_COMMAND);
         yield exec_1.exec(GIT_PUSH_TAGS_COMMAND);
     });
