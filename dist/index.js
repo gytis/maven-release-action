@@ -8466,8 +8466,8 @@ class Action {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield this.init();
-                // await this.prepare()
-                // await this.push()
+                yield this.prepare();
+                yield this.push();
             }
             catch (e) {
                 this.handleFailure(e);
@@ -8483,6 +8483,7 @@ class Action {
     }
     prepare() {
         return __awaiter(this, void 0, void 0, function* () {
+            core_1.info('tagging');
             let params = [];
             if (this.releaseVersion.length > 0) {
                 params.push(`-DreleaseVersion=${this.releaseVersion}`);

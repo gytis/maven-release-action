@@ -24,8 +24,8 @@ class Action {
     public async execute(): Promise<void> {
         try {
             await this.init()
-            // await this.prepare()
-            // await this.push()
+            await this.prepare()
+            await this.push()
         } catch (e) {
             this.handleFailure(e)
         }
@@ -38,6 +38,7 @@ class Action {
     }
 
     async prepare(): Promise<void> {
+        info('tagging')
         let params = [];
         if (this.releaseVersion.length > 0) {
             params.push(`-DreleaseVersion=${this.releaseVersion}`)
