@@ -1,29 +1,20 @@
 name: "Maven release action"
 description: "Release a Java project with a maven-release-plugin"
 inputs:
-  token:
-    description: "GitHub token"
-    required: true
   email:
     description: "Email of the initiating user"
     required: true
   profiles:
-    description: "Maven profiles that should be activated e.g. release"
+    description: "Maven profiles that should be activated"
     required: false
   releaseVersion:
     description: "Version to be released"
     required: false
-  # TODO remove
   developmentVersion:
     description: "New development version"
     required: false
-   # TODO remove
   tag:
-    description: "Tag to be used"
-    required: false
-  branch:
-    description: "Branch which should be released"
-    default: "master"
+    description: "Tag name to be used"
     required: false
 runs:
   using: "node12"

@@ -11,6 +11,7 @@ class Action {
     email: string
     releaseVersion: string
     developmentVersion: string
+    tag: string
     profiles: string
 
     constructor() {
@@ -18,6 +19,7 @@ class Action {
         this.email = getInput('email', { required: true })
         this.releaseVersion = getInput('releaseVersion')
         this.developmentVersion = getInput('developmentVersion')
+        this.tag = getInput('tag')
         this.profiles = getInput('profiles')
     }
 
@@ -38,13 +40,15 @@ class Action {
     }
 
     async prepare(): Promise<void> {
-        info('tagging')
         let params = [];
         if (this.releaseVersion.length > 0) {
             params.push(`-DreleaseVersion=${this.releaseVersion}`)
         }
         if (this.developmentVersion.length > 0) {
             params.push(`-DdevelopmentVersion=${this.developmentVersion}`)
+        }
+        if(this.tag.length > 0) {
+            params.push(`-Dtag=${this.tag}`)
         }
         if (this.profiles.length > 0) {
             params.push(`-P${this.profiles}`)

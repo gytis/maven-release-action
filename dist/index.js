@@ -8460,6 +8460,7 @@ class Action {
         this.email = core_1.getInput('email', { required: true });
         this.releaseVersion = core_1.getInput('releaseVersion');
         this.developmentVersion = core_1.getInput('developmentVersion');
+        this.tag = core_1.getInput('tag');
         this.profiles = core_1.getInput('profiles');
     }
     execute() {
@@ -8483,13 +8484,15 @@ class Action {
     }
     prepare() {
         return __awaiter(this, void 0, void 0, function* () {
-            core_1.info('tagging');
             let params = [];
             if (this.releaseVersion.length > 0) {
                 params.push(`-DreleaseVersion=${this.releaseVersion}`);
             }
             if (this.developmentVersion.length > 0) {
                 params.push(`-DdevelopmentVersion=${this.developmentVersion}`);
+            }
+            if (this.tag.length > 0) {
+                params.push(`-Dtag=${this.tag}`);
             }
             if (this.profiles.length > 0) {
                 params.push(`-P${this.profiles}`);
