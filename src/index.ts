@@ -14,8 +14,10 @@ const PROPERTIES = {
     releaseVersion: getInput('releaseVersion'),
     developmentVersion: getInput('developmentVersion'),
     tag: getInput('tag'),
+    prepareArguments: getInput('prepareArguments'),
+    performArguments: getInput('performArguments'),
     profiles: getInput('profiles'),
-    doNotDeploy: getInput('doNotDeploy').toLowerCase() === 'true'
+    doNotDeploy: getInput('doNotDeploy').toLowerCase() === 'true',
 }
 
 async function init(): Promise<void> {
@@ -35,6 +37,9 @@ async function prepare(): Promise<void> {
     if (PROPERTIES.tag.length > 0) {
         params.push(`-Dtag=${PROPERTIES.tag}`)
     }
+    if (PROPERTIES.prepareArguments.length > 0) {
+        params.push(`-Darguments="${PROPERTIES.prepareArguments}"`)
+    }
     if (PROPERTIES.profiles.length > 0) {
         params.push(`-P${PROPERTIES.profiles}`)
     }
@@ -47,6 +52,9 @@ async function perform(): Promise<void> {
         return
     }
     let params = []
+    if (PROPERTIES.performArguments.length > 0) {
+        params.push(`-Darguments="${PROPERTIES.performArguments}"`)
+    }
     if (PROPERTIES.profiles.length > 0) {
         params.push(`-P${PROPERTIES.profiles}`)
     }

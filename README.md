@@ -23,6 +23,8 @@ This is a GitHub action to automate Maven project's tagging and deploying (optio
 | releaseVersion | Release version that should be used | Delegate to the release plugin |
 | developmentVersion | Next development version that should be used | Delegate to the release plugin |
 | tag | Tag name that should be used | Delegate to the release plugin |
+| prepareArguments | `-Darguments` value that should be passed to a prepare command | -
+| performArguments | `-Darguments` value that should be passed to a perform command | -
 | doNotDeploy | Whether the deploy step should be skipped i.e. only tag the project | false |
 
 ## Example. Release on push to master

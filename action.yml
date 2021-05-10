@@ -16,6 +16,12 @@ inputs:
   tag:
     description: "Tag name to be used"
     required: false
+  prepareArguments:
+    description: "-Darguments value that should be passed to a prepare command"
+    required: false
+  performArguments:
+    description: "-Darguments value that should be passed to a perform command"
+    required: false
   doNotDeploy:
     description: "Skip deploy step"
     required: false

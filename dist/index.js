@@ -8462,8 +8462,10 @@ const PROPERTIES = {
     releaseVersion: core_1.getInput('releaseVersion'),
     developmentVersion: core_1.getInput('developmentVersion'),
     tag: core_1.getInput('tag'),
+    prepareArguments: core_1.getInput('prepareArguments'),
+    performArguments: core_1.getInput('performArguments'),
     profiles: core_1.getInput('profiles'),
-    doNotDeploy: core_1.getInput('doNotDeploy').toLowerCase() === 'true'
+    doNotDeploy: core_1.getInput('doNotDeploy').toLowerCase() === 'true',
 };
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -8484,6 +8486,9 @@ function prepare() {
         if (PROPERTIES.tag.length > 0) {
             params.push(`-Dtag=${PROPERTIES.tag}`);
         }
+        if (PROPERTIES.prepareArguments.length > 0) {
+            params.push(`-Darguments="${PROPERTIES.prepareArguments}"`);
+        }
         if (PROPERTIES.profiles.length > 0) {
             params.push(`-P${PROPERTIES.profiles}`);
         }
@@ -8497,6 +8502,9 @@ function perform() {
             return;
         }
         let params = [];
+        if (PROPERTIES.performArguments.length > 0) {
+            params.push(`-Darguments="${PROPERTIES.performArguments}"`);
+        }
         if (PROPERTIES.profiles.length > 0) {
             params.push(`-P${PROPERTIES.profiles}`);
         }
